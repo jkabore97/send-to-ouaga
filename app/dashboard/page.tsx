@@ -1,11 +1,17 @@
 'use client';
 import { useState } from 'react';
-import { ArrowRight, History, Wallet } from 'lucide-react';
+import { ArrowRight, History, Wallet, Eye } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState('');
   const [network, setNetwork] = useState<'orange' | 'mobicash' | 'telecel'>('orange');
+
+  const recentTransactions = [
+    { id: 'TXN001', date: 'Jun 7', amount: 150, recipient: '+226 70 12 34 56', network: 'Orange' },
+    { id: 'TXN002', date: 'Jun 5', amount: 75, recipient: '+226 65 98 76 54', network: 'Mobi' },
+  ];
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +37,9 @@ export default function Dashboard() {
             <div className="bg-gray-900 px-4 py-1.5 rounded-full text-sm flex items-center gap-2">
               <Wallet className="w-4 h-4 text-emerald-500" /> Balance: <span className="font-semibold">$1,245.80</span>
             </div>
+            <Link href="/history" className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-full text-sm transition">
+              <History className="w-4 h-4" /> History
+            </Link>
             <button 
               onClick={() => window.location.href = '/'}
               className="px-5 py-2 bg-gray-800 hover:bg-gray-700 rounded-full text-sm transition"
@@ -105,15 +114,36 @@ export default function Dashboard() {
             </form>
           </div>
 
-          {/* Sidebar Info */}
+          {/* Sidebar */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6">
-              <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <History className="text-emerald-500" /> Recent Transfers
-              </h4>
-              <div className="text-gray-400 text-sm">
-                No transfers yet. Your first send will appear here.
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <History className="text-emerald-500" /> Recent Transfers
+                </h4>
+                <Link href="/history" className="text-emerald-500 text-sm flex items-center gap-1 hover:underline">
+                  View all <Eye className="w-3 h-3" />
+                </Link>
               </div>
+              
+              {recentTransactions.length > 0 ? (
+                <div className="space-y-3">
+                  {recentTransactions.map((tx, i) => (
+                    <div key={i} className="flex justify-between items-center bg-gray-800/50 p-3 rounded-2xl text-sm">
+                      <div>
+                        <div className="font-mono text-emerald-400">{tx.id}</div>
+                        <div className="text-gray-400 text-xs">{tx.date} • {tx.network}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold">${tx.amount}</div>
+                        <div className="text-gray-500 text-xs">{tx.recipient}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-400 text-sm">No transfers yet.</div>
+              )}
             </div>
 
             <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 text-sm">
